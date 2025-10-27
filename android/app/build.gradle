@@ -111,9 +111,6 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
-    if (hermesEnabled.toBoolean()) {
-        implementation("com.facebook.react:hermes-android")
-    } else {
-        implementation jscFlavor
-    }
+    // Always use Hermes for React Native 0.70+
+    implementation("com.facebook.react:hermes-android")
 }
