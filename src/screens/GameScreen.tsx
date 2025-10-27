@@ -10,7 +10,11 @@ import {
 } from 'react-native';
 import {SpotifyService} from '../services/SpotifyService';
 
-export const GameScreen = ({navigation}: any) => {
+interface GameScreenProps {
+  onLogout: () => void;
+}
+
+export const GameScreen = ({onLogout}: GameScreenProps) => {
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(30);
@@ -44,7 +48,7 @@ export const GameScreen = ({navigation}: any) => {
         [
           {
             text: 'OK',
-            onPress: () => navigation.replace('Login'),
+            onPress: () => onLogout(),
           },
         ],
       );
@@ -127,7 +131,7 @@ export const GameScreen = ({navigation}: any) => {
         style: 'destructive',
         onPress: async () => {
           await SpotifyService.disconnect();
-          navigation.replace('Login');
+          onLogout();
         },
       },
     ]);

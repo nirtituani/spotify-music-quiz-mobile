@@ -9,12 +9,16 @@ import {
 } from 'react-native';
 import {SpotifyAuth} from '../services/SpotifyAuth';
 
-export const LoginScreen = ({navigation}: any) => {
+interface LoginScreenProps {
+  onLoginSuccess: () => void;
+}
+
+export const LoginScreen = ({onLoginSuccess}: LoginScreenProps) => {
   const handleLogin = async () => {
     try {
       const success = await SpotifyAuth.login();
       if (success) {
-        navigation.replace('Game');
+        onLoginSuccess();
       }
     } catch (error) {
       console.error('Login failed:', error);

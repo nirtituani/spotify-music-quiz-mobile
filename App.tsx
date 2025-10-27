@@ -1,24 +1,28 @@
-import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, {useState} from 'react';
+import {SafeAreaView, StatusBar} from 'react-native';
 import {LoginScreen} from './src/screens/LoginScreen';
 import {GameScreen} from './src/screens/GameScreen';
 
-const Stack = createNativeStackNavigator();
-
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{
-          headerShown: false,
-          contentStyle: {backgroundColor: '#191414'},
-        }}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Game" component={GameScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#191414'}}>
+      <StatusBar barStyle="light-content" backgroundColor="#191414" />
+      {!isLoggedIn ? (
+        <LoginScreen onLoginSuccess={handleLoginSuccess} />
+      ) : (
+        <GameScreen onLogout={handleLogout} />
+      )}
+    </SafeAreaView>
   );
 }
 
