@@ -1,4 +1,4 @@
-import SpotifyRemote from 'react-native-spotify-remote';
+import Spotify from 'rn-spotify-sdk';
 import {SpotifyAuth} from './SpotifyAuth';
 
 const API_BASE_URL = 'https://spotify-music-quiz.pages.dev';
@@ -13,10 +13,19 @@ export class SpotifyService {
         throw new Error('No access token available');
       }
 
-      // Connect to Spotify Remote
-      await SpotifyRemote.connect(token);
-      this.isConnected = true;
-      console.log('Connected to Spotify Remote');
+      // Initialize Spotify SDK
+      const initialized = await Spotify.initialize({
+        clientID: 'YOUR_SPOTIFY_CLIENT_ID', // Will be configured
+        redirectURL: 'spotifymusicquiz://callback',
+        scopes: ['streaming', 'user-read-private', 'user-read-email'],
+      });
+
+      if (initialized) {
+        // Set access token
+        await Spotify.setAccessToken(token);
+        this.isConnected = true;
+        console.log('Connected to Spotify');
+      }
     } catch (error) {
       console.error('Failed to connect to Spotify:', error);
       throw error;
@@ -26,7 +35,7 @@ export class SpotifyService {
   static async disconnect(): Promise<void> {
     try {
       if (this.isConnected) {
-        await SpotifyRemote.disconnect();
+        await Spotify.logout();
         this.isConnected = false;
       }
       await SpotifyAuth.logout();
@@ -67,7 +76,7 @@ export class SpotifyService {
         await this.connect();
       }
 
-      await SpotifyRemote.playUri(uri);
+      await Spotify.playURI(uri, 0, 0);
       console.log('Playing track:', uri);
     } catch (error) {
       console.error('Error playing track:', error);
@@ -78,7 +87,7 @@ export class SpotifyService {
   static async stopPlayback(): Promise<void> {
     try {
       if (this.isConnected) {
-        await SpotifyRemote.pause();
+        await Spotify.setPlaying(false);
       }
     } catch (error) {
       console.error('Error stopping playback:', error);
@@ -90,7 +99,7 @@ export class SpotifyService {
       if (!this.isConnected) {
         return null;
       }
-      return await SpotifyRemote.getPlayerState();
+      return await Spotify.getPlayerState();
     } catch (error) {
       console.error('Error getting player state:', error);
       return null;
